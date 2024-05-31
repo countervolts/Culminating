@@ -4,3 +4,16 @@
   - added all files for the first time
   - implimented main core gameplay logic aswell enemy and other things
   - added debug settings
+
+### Update 2 (date: 05-31)
+  - lots of comments added
+  - added more debug settings (god mode and noclip)
+  - added stats logging/outputting, logs the following
+      - time played (in seconds and minutes)
+      - total moves (by keeping track of the w, a, s, d keypresses)
+      - levels completed (just by doing  ```num_levels += 1``` after ever generate_maze func call)
+  - added more colours aswell (in the ```log_debug``` function (line 176))
+  - attempted to add functions that would create multiple paths to the end (need to fix)
+  - improved ```log_debug``` printing for enemy movement (not completely flooding the console now)
+      - uses ```player_moved = false``` so that it will only print the enemy movement debug when the player moves (which seems more reasonable)
+  - added more to [todo.txt](https://github.com/countervolts/Culminating/blob/main/todo.txt)
