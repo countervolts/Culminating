@@ -1,23 +1,35 @@
+Finished features:
+
+[add] impliemnt func that will create a file and show the user their stats about the game
+[add/fix] comments
+
+
+Partially/Mostly finished features:
+
 [add] output when the user dies that will show the following
-    - score (implement score system)
+    - score (implement score system) [todo idk]
     - time played
     - number of moves
     - number of levels completed
 
+[debug] make it more organized
+    - just the auto move debug_log (everything else is good)
+
+
+Todo:
+
 [add] make the game get harder as the levels go on
-    - make enemy move faster
-    - make maze bigger
+    - make enemy move faster (reduce the time between enemy moves)
+    - make maze bigger (increase WIDTH HEIGHT every level or 2)
     - [?] implement diffculty scale in settings.py
+
+[add] easy way the change settings that isnt in the settings.py
+[add] something to show the user between levels (possible ive already made the end game stats logging)
+[add] show game details before game starts (i forget what i mean by this tbh)
+
 
 [fix] the user not being able to go to the next level when completing the current level
     - how to replicate the issue: walk to the yellow dot and it wont let them finish
     - when in auto move it will allow them to go to the next level
 
-[add/fix] comments, documentation, and clean up code
-
-[add] impliemnt func that will create a file and show the user their stats about the game
-[add] easy way the change settings that isnt in the settings.py
-[add] something to show the user between levels
-[add] show game details before game starts
-
-[debug] make it more organized
+[fix] line 317 with player noclip being buggy when walking into walls
