@@ -72,7 +72,7 @@ def heuristic(node, end):
 player_last_move_time = pygame.time.get_ticks()
 enemy_last_move_time = pygame.time.get_ticks()
 
-# dfs function uses depth-first search to find a path from start to end
+# func for dfs (depth first search) algo
 def dfs(start, end):
     stack = [start]
     visited = set()
@@ -87,7 +87,8 @@ def dfs(start, end):
                     stack.append(neighbor)
     return False
 
-# remove_path function removes a path from start to end from the maze
+# pro function that will remove parts of the paths to make multiple ways to the end
+# ( doesnt work :) ) 
 def remove_path(start, end):
     stack = [start]
     visited = set()
@@ -103,16 +104,16 @@ def remove_path(start, end):
     for node in visited:
         maze[node[1]][node[0]] = '*'
 
-# get_neighbors function returns the valid neighbors of a node
+# func to return valid neighbors of a node
 def get_neighbors(node):
     x, y = node
     return [(nx, ny) for nx, ny in [(x-1, y), (x+1, y), (x, y-1), (x, y+1)] if valid_move(nx, ny)]
 
-# valid_move function checks if a move is valid
+# makes sure the user doesnt go out of bounds
 def valid_move(x, y):
     return 0 < x < WIDTH and 0 < y < HEIGHT
 
-# draw_maze function draws the maze on the screen
+# draws the maze
 def draw_maze():
     screen.fill((0, 0, 0))
     for i in range(HEIGHT):
@@ -122,7 +123,7 @@ def draw_maze():
             screen.blit(text, (j * SIZE + SIZE // 2 - text.get_width() // 2, i * SIZE + SIZE // 2 - text.get_height() // 2))
     pygame.display.flip()
 
-# carve function carves a path in the maze
+# carve function carves a path in the maze 
 def carve(x, y):
     dir = list(range(4))
     random.shuffle(dir)
@@ -214,6 +215,20 @@ def log_stats(time_played, num_moves, num_levels):
 
         file += 1 
 
+# the function for the automated movement pathfinding, this is just BFS (https://en.wikipedia.org/wiki/Breadth-first_search)
+def automove_pf(start, end):
+    queue = [(start, [start])]
+    visited = set([start])
+    while queue:
+        (vertex, path) = queue.pop(0)
+        for next in [(vertex[0] - 1, vertex[1]), (vertex[0] + 1, vertex[1]), (vertex[0], vertex[1] - 1), (vertex[0], vertex[1] + 1)]:
+            if next not in visited and maze[next[0]][next[1]] != '*':
+                if next == end:
+                    return path + [next]
+                visited.add(next)
+                queue.append((next, path + [next]))
+    return []
+
 clock = pygame.time.Clock()
 
 generate_maze()
@@ -293,24 +308,30 @@ while running:
     # lazy bypass for player_move_delay when using automated movement
     if automated_movement or current_time - player_last_move_time >= PLAYER_MOVE_DELAY:
         player_old_position = tuple(player)
+        # so here ive added a seperate pathfinding algorithm for the automated movement debug
         if automated_movement:
-            path_start_time = time.time()
-            path = enemy_pathfinding(tuple(player), tuple(end))
-            path_end_time = time.time()
+            if not path:
+                path_start_time = time.time()
+                # this pathfinding algorithm uses BFS (https://en.wikipedia.org/wiki/Breadth-first_search) to bruteforce the path to the end
+                # this algo can be very good or bad, if later i add something that makes the levels harder i will change this to something else
+                # probably dijkstra algorithm (https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
+                path = automove_pf(tuple(player), tuple(end)) 
+                path_end_time = time.time()
             if path:
-                # noclip is so cool, anyways this just is sanity check for noclip mode
-                if noclip_mode or maze[path[1][0]][path[1][1]] != '*':
-                    player[0], player[1] = path[1]
-                    log_debug(f'Player moved to {path[1]}', level, entity='player')
-                if player == end:
-                    log_debug('Reached the end', level, entity='player')
-                    end_time = time.time()
-                    log_debug(f'Total time: {end_time - automated_start_time:.2f}ms', level, entity='maze gen')
-                    level += 1
-                    log_debug('New maze generation', level, entity='maze gen')
-                    generate_maze()
-                    num_levels += 1
-                    automated_movement = False
+                next_position = path.pop(0)
+                if noclip_mode or maze[next_position[0]][next_position[1]] != '*':
+                    player[0], player[1] = next_position
+                    log_debug(f'Player moved to {next_position}', level, entity='player')
+            if player == end:
+                log_debug('Automovement worked successfully', level, entity='Debug')
+                end_time = time.time()
+                log_debug(f'Total time: {end_time - automated_start_time:.2f}ms', level, entity='maze gen')
+                level += 1
+                log_debug('New maze generation', level, entity='maze gen')
+                generate_maze()
+                num_levels += 1
+                automated_movement = False
+                path = []  # Reset the path
 
         # all player movement when pressing the w, a, s, c keys
         # aswell printing those movements
@@ -387,7 +408,6 @@ while running:
         path_end_time = time.time()
         if DEBUG_MODE and player_moved:
             log_debug(f'algorithm for enemy movement: {(path_end_time - path_start_time) * 1000:.2f}µs', level, entity='enemy')
-        # Check that path has at least two elements before trying to access path[1]
         if path and len(path) > 1:
             enemy[0], enemy[1] = path[1]
         enemy_last_move_time = current_time
