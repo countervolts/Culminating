@@ -35,6 +35,7 @@
 ### Update 3 (date 06-05 (5:26 pm)) [changelog](https://github.com/countervolts/Culminating/commit/f8171a510a5cc8e726e4a61cc4fd81f43cb9a41b)
   - added `display_menu` to show the user all the settings and allowing them to change it
     - doesnt currently update the settings.py file for some reason [see](https://github.com/countervolts/Culminating/blob/87a6406db63cf7b6840a37b9a05c35a907e27bf5/todo.md?plain=1#L32)
+  - within `menu.py` ive added `default_settings` so that if the settings.py file isnt there it will create it with the default values
   - added "modifiers"
     - `LIGHTS_OUT` settings this to true will make all these settings become true aswell
       - `END_GLOW_ON`
