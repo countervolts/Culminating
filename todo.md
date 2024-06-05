@@ -7,7 +7,10 @@
     - time played
     - number of moves
     - number of levels completed
+
 - [x] organize the auto move debug_log.
+
+- [x] implement an easy way to change settings that isn't in the `settings.py` file.
 
 ## stuff todo
 
@@ -18,7 +21,6 @@
     - make maze bigger (increase width height every level or two)
     - [?] implement difficulty scale in settings.py
 
-- [ ] implement an easy way to change settings that isn't in the `settings.py` file.
 - [ ] show the user something between levels (possibly use the end game stats logging).
 - [ ] show game details before the game starts.
 
@@ -27,3 +29,4 @@
     - how to replicate the issue: walk to the yellow dot and it won't let them finish.
     - when in auto move, it will allow them to go to the next level.
 - [ ] fix line 317 with player noclip being buggy when walking into walls.
+- [ ] menu currently doesnt update the settings.py
