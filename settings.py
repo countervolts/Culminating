@@ -1,11 +1,15 @@
 ## GAME SETTINGS
 
 # game settings
-WIDTH, HEIGHT = 21, 21 # map size this will be dynamic in the future as the player goes from level to level
+WIDTH = 21
+HEIGHT = 21 
 SIZE = 30 
 FONT_SIZE = 40 # size of the characters and other things that are classified as "font" 
 PLAYER_MOVE_DELAY = 185 
 ENEMY_MOVE_DELAY = 175 # bug: when the user freezes then unfreezes the game the enemy, they will go to 175 delay because of ln 255 in game.py
+
+# modifiers 
+LIGHTS_OUT = True
 
 # colours
 WALKABLE_COLOR = (200, 200, 200)  # light gray
@@ -25,16 +29,16 @@ MAZE_GENERATION_SPEED = 25 # the speed it will generate the maze infront of the 
 
 # misc settings
 FLASHLIGHT_RADIUS = 5
-FLASHLIGHT_ON = False # this should be a global variable
+FLASHLIGHT_ON = LIGHTS_OUT  # this should be a global variable
 
 # end point glow settings
 END_GLOW_RADIUS = 5
-END_GLOW_ON = False # 
+END_GLOW_ON = LIGHTS_OUT
 
 # enemy settings
 enemy = [WIDTH // 2, HEIGHT // 2] # dont change please it breaks the game currently
 ENEMY_FLASHLIGHT_RADIUS = 5
-ENEMY_FLASHLIGHT_ON = True
+ENEMY_FLASHLIGHT_ON = LIGHTS_OUT
 
 # debug settings
 DEBUG_MODE = True
