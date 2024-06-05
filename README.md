@@ -24,3 +24,10 @@
       - to fix this ive added a seperate algorithm ```automove_pf``` that uses BFS (breadth first search) to bruteforce
   - added ```debug_log``` for ```automated_movement```
   -  nothing new with [settings.py](https://github.com/countervolts/Culminating/blob/main/settings.py) or [todo.txt](https://github.com/countervolts/Culminating/blob/main/todo.txt)
+
+### Update 3ish (date: 06-05) [changelog](https://github.com/countervolts/Culminating/commit/00da44a554b4ee5e22be93ada6632dffe99871c8)
+  - changed some naming
+  - fixed output for ```debug_log``` when ```automated_movement```
+     - i added a flag so it will only print once
+  - changed todo.txt to [todo.md](https://github.com/countervolts/Culminating/blob/main/todo.md) (looks better)
+  -  nothing new with [settings.py](https://github.com/countervolts/Culminating/blob/main/settings.py) 
