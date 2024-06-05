@@ -246,7 +246,7 @@ auto_delay = 0
 god_mode = False
 gm_delay = 0
 
-noclip_mode = False
+nc_mode = False
 nc_delay = 0
 
 # debug print control
@@ -298,11 +298,11 @@ while running:
     # yes!! pressing F4 key will make me have no collision 
     if DEBUG_MODE and keys[pygame.K_F4] and current_time - nc_delay > 500:
         nc_delay = current_time
-        if noclip_mode:
-            noclip_mode = False
+        if nc_mode:
+            nc_mode = False
             log_debug('Noclip mode toggled off', level, entity='Debug')
         else:
-            noclip_mode = True
+            nc_mode = True
             log_debug('Noclip mode toggled on', level, entity='Debug')
 
     # lazy bypass for player_move_delay when using automated movement
@@ -312,16 +312,18 @@ while running:
         if automated_movement:
             if not path:
                 path_start_time = time.time()
-                # this pathfinding algorithm uses BFS (https://en.wikipedia.org/wiki/Breadth-first_search) to bruteforce the path to the end
-                # this algo can be very good or bad, if later i add something that makes the levels harder i will change this to something else
-                # probably dijkstra algorithm (https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
                 path = automove_pf(tuple(player), tuple(end)) 
                 path_end_time = time.time()
+                if not path: 
+                    # cleans up the automative movement debug print
+                    # this just adds a flag so that if the pathfinding for it hasnt been found yet it will print it
+                    # but just once, aswell it wont print all the other "Player moved X to X, X"
+                    log_debug('Auto moving player', level, entity='Debug')
             if path:
                 next_position = path.pop(0)
-                if noclip_mode or maze[next_position[0]][next_position[1]] != '*':
+                if nc_mode or maze[next_position[0]][next_position[1]] != '*':
                     player[0], player[1] = next_position
-                    log_debug(f'Player moved to {next_position}', level, entity='player')
+
             if player == end:
                 log_debug('Automovement worked successfully', level, entity='Debug')
                 end_time = time.time()
@@ -331,13 +333,13 @@ while running:
                 generate_maze()
                 num_levels += 1
                 automated_movement = False
-                path = []  # Reset the path
+                path = []  
 
-        # all player movement when pressing the w, a, s, c keys
+        # all player movement when pressing the w, a, s, d keys
         # aswell printing those movements
-        # bug: when the user uses noclip it will turn the walls into walkable parts (turns them into . instead of *)
+        # bug: when the user uses noclip it will turn the walls into walkable parts (turns them into . instead of *)        
         if keys[pygame.K_w] or keys[pygame.K_UP]:
-            if noclip_mode or maze[player[1] - 1][player[0]] == '.':
+            if nc_mode or maze[player[1] - 1][player[0]] == '.':
                 maze[player[1]][player[0]] = '.'
                 player[1] -= 1
                 maze[player[1]][player[0]] = ' '
@@ -345,7 +347,7 @@ while running:
             direction = 0
 
         elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            if noclip_mode or maze[player[1]][player[0] - 1] == '.':
+            if nc_mode or maze[player[1]][player[0] - 1] == '.':
                 maze[player[1]][player[0]] = '.'
                 player[0] -= 1
                 maze[player[1]][player[0]] = ' '
@@ -353,7 +355,7 @@ while running:
             direction = 3
 
         elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            if noclip_mode or maze[player[1] + 1][player[0]] == '.':
+            if nc_mode or maze[player[1] + 1][player[0]] == '.':
                 maze[player[1]][player[0]] = '.'
                 player[1] += 1
                 maze[player[1]][player[0]] = ' '
@@ -361,7 +363,7 @@ while running:
             direction = 2
 
         elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            if noclip_mode or maze[player[1]][player[0] + 1] == '.':
+            if nc_mode or maze[player[1]][player[0] + 1] == '.':
                 maze[player[1]][player[0]] = '.'
                 player[0] += 1
                 maze[player[1]][player[0]] = ' '
@@ -379,7 +381,7 @@ while running:
             if event.key in [pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d]:
                 num_moves += 1 
 
-    # visual fix cause pygame is stupid
+    # visual fix cause pygame is sucky 
     screen.fill((0, 0, 0))
 
     # rendering the game and some other stuff ill comment in later (yes, im lazy)
