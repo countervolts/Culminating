@@ -9,11 +9,14 @@ import time
 # for colours
 from colorama import init, Fore
 
-# importing from settings.py
+# importing other files
+from menu import display_menu
 from settings import *
 
-
 init() # for colorama
+
+# displaying the settings menu before the maze is generated
+display_menu()
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH * SIZE, HEIGHT * SIZE))
@@ -211,8 +214,8 @@ def log_stats(time_played, num_moves, num_levels):
     with open(f'Stats{file}.txt', 'w') as f:
         f.write(f"Time played: {time_played} seconds ({time_played_minutes:.2f} minutes)\n")
         f.write(f"Number of moves: {num_moves}\n")
-        f.write(f"Number of levels completed: {num_levels}\n")
-
+        f.write(f"Number of levels completed: {num_levels}\n")\
+        
         file += 1 
 
 # the function for the automated movement pathfinding, this is just BFS (https://en.wikipedia.org/wiki/Breadth-first_search)
@@ -255,6 +258,7 @@ player_moved = False
 # this is a capture for the time stat
 start_time = pygame.time.get_ticks()  
 
+running = True
 while running:
     dt = clock.tick()
     current_time = pygame.time.get_ticks()
@@ -337,7 +341,7 @@ while running:
 
         # all player movement when pressing the w, a, s, d keys
         # aswell printing those movements
-        # bug: when the user uses noclip it will turn the walls into walkable parts (turns them into . instead of *)        
+        # bug: when the user uses noclip it will turn the walls into walkable parts (turns them into . instead of *)
         if keys[pygame.K_w] or keys[pygame.K_UP]:
             if nc_mode or maze[player[1] - 1][player[0]] == '.':
                 maze[player[1]][player[0]] = '.'
