@@ -45,3 +45,6 @@
   - in [settings.py](https://github.com/countervolts/Culminating/blob/main/settings.py) changed `WIDTH` and `HEIGHT` to seperate lines (visually better)
   - in [todo.md](https://github.com/countervolts/Culminating/blob/main/todo.md) changed "implement an easy way to change settings that isn't in the `settings.py` file." into `finished things`
     - aswell added new bug [here](https://github.com/countervolts/Culminating/blob/87a6406db63cf7b6840a37b9a05c35a907e27bf5/todo.md?plain=1#L32)
+
+### Update 3.5 (date 06-07) [changelog](https://github.com/countervolts/Culminating/commit/35275e1e019ffa08006783e6beb6c388c2aa9d59)
+  - fixed output for `automated_movement` so it actually only prints once this time
