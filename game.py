@@ -16,7 +16,8 @@ from settings import *
 init() # for colorama
 
 # displaying the settings menu before the maze is generated
-display_menu()
+# display_menu() 
+# commented out cus doesnt work
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH * SIZE, HEIGHT * SIZE))
@@ -285,9 +286,10 @@ while running:
 
     # this is a comment to say that this code below me will automate the player movement when they press F2 
     if DEBUG_MODE and keys[pygame.K_F2] and current_time - auto_delay > 500:
-        automated_movement = True
-        log_debug('Automated movement activated', level) # idk why this prints like 10 million times when used
-        automated_start_time = time.time()
+        if not automated_movement:
+            automated_movement = True
+            log_debug('Automated movement activated', level, entity='Debug') # idk why this prints like 10 million times when used
+            automated_start_time = time.time()
 
     # blah blah blah F3 = god mode = true
     if DEBUG_MODE and keys[pygame.K_F3] and current_time - gm_delay > 500:
