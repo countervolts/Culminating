@@ -12,6 +12,14 @@
 
 - [x] implement an easy way to change settings that isn't in the `settings.py` file.
 
+- [x] fix the issue where the user can't go to the next level when completing the current level:
+    - how to replicate the issue: walk to the yellow dot and it won't let them finish.
+    - when in auto move, it will allow them to go to the next level.
+
+- [x] show the user something between levels (possibly use the end game stats logging).
+- [x] show game details before the game starts.
+- [x] fix line 317 (no longer that line) with player noclip being buggy when walking into walls.
+
 ## stuff todo
 
 ### new features
@@ -21,12 +29,5 @@
     - make maze bigger (increase width height every level or two)
     - [?] implement difficulty scale in settings.py
 
-- [ ] show the user something between levels (possibly use the end game stats logging).
-- [ ] show game details before the game starts.
-
 ### bug fixes
-- [ ] fix the issue where the user can't go to the next level when completing the current level:
-    - how to replicate the issue: walk to the yellow dot and it won't let them finish.
-    - when in auto move, it will allow them to go to the next level.
-- [ ] fix line 317 with player noclip being buggy when walking into walls.
 - [ ] menu currently doesnt update the settings.py
