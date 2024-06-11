@@ -56,7 +56,7 @@
       - when game first started
       - when next level is generated
   - information being show is the following:
-      - `PLAYER_MOVE_DELAY`returns the user movement delay [this can be found here](https://github.com/countervolts/Culminating/blob/81c67d080846739f208c45f4c08506fd4702645a/settings.py#L8) 
+      - `PLAYER_MOVE_DELAY` returns the user movement delay [this can be found here](https://github.com/countervolts/Culminating/blob/81c67d080846739f208c45f4c08506fd4702645a/settings.py#L8) 
       - `ENEMY_MOVE_DELAY` returns the enemy movement delay [this can be found here](https://github.com/countervolts/Culminating/blob/81c67d080846739f208c45f4c08506fd4702645a/settings.py#L9) 
       - `LIGHTS_OUT` returns "True" or "False" [this can be found here](https://github.com/countervolts/Culminating/blob/81c67d080846739f208c45f4c08506fd4702645a/settings.py#L12)
       - `DEBUG_MODE` returns "True" or "False" [this can be found here](https://github.com/countervolts/Culminating/blob/81c67d080846739f208c45f4c08506fd4702645a/settings.py#L44)
