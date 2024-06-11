@@ -48,3 +48,20 @@
 
 ### Update 3.5 (date 06-07) [changelog](https://github.com/countervolts/Culminating/commit/35275e1e019ffa08006783e6beb6c388c2aa9d59)
   - fixed output for `automated_movement` so it actually only prints once this time
+
+### Update 4 (date 06-11) [changelog](https://github.com/countervolts/Culminating/commit/d86039434c243903df3766f411449b60234ef108)
+  - fixed the user not being able to finish the game when reaching the end
+  - fixed noclip removing things (walls and walkables) when moved over
+  - showing the user information on the following events, the function is `print_info` you can find it [here](https://github.com/countervolts/Culminating/commit/d86039434c243903df3766f411449b60234ef108#diff-cc0ae3198bf596e4b93f96f7168c61db98f4b773af06509a829115ede915a079R268) (doesnt require `debug_mode` to be true)
+      - when game first started
+      - when next level is generated
+  - information being show is the following:
+      - `PLAYER_MOVE_DELAY`returns the user movement delay [this can be found here](https://github.com/countervolts/Culminating/blob/81c67d080846739f208c45f4c08506fd4702645a/settings.py#L8) 
+      - `ENEMY_MOVE_DELAY` returns the enemy movement delay [this can be found here](https://github.com/countervolts/Culminating/blob/81c67d080846739f208c45f4c08506fd4702645a/settings.py#L9) 
+      - `LIGHTS_OUT` returns "True" or "False" [this can be found here](https://github.com/countervolts/Culminating/blob/81c67d080846739f208c45f4c08506fd4702645a/settings.py#L12)
+      - `DEBUG_MODE` returns "True" or "False" [this can be found here](https://github.com/countervolts/Culminating/blob/81c67d080846739f208c45f4c08506fd4702645a/settings.py#L44)
+  - remove some stupid comments
+  - imported `os` ([python.org](https://docs.python.org/3/library/os.html))
+    - used for clearing console before showing information using `os.system` ([find here](https://docs.python.org/3/library/os.html#os.system))
+  - general printing impovements
+  - updated [todo.md](https://github.com/countervolts/Culminating/commit/ce910f495d9945659aae9cf2c378648b3eccd5d1)
