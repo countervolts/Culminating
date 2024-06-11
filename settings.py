@@ -5,7 +5,7 @@ WIDTH = 21
 HEIGHT = 21 
 SIZE = 30 
 FONT_SIZE = 40 # size of the characters and other things that are classified as "font" 
-PLAYER_MOVE_DELAY = 185 
+PLAYER_MOVE_DELAY = 185
 ENEMY_MOVE_DELAY = 175 # bug: when the user freezes then unfreezes the game the enemy, they will go to 175 delay because of ln 255 in game.py
 
 # modifiers 
