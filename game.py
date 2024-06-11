@@ -2,6 +2,7 @@
 import pygame
 import random
 import math
+import os
 
 # for debug timing aswell printing stats
 import time
@@ -12,6 +13,7 @@ from colorama import init, Fore
 # importing other files
 from menu import display_menu
 from settings import *
+
 
 init() # for colorama
 
@@ -259,7 +261,24 @@ player_moved = False
 # this is a capture for the time stat
 start_time = pygame.time.get_ticks()  
 
+path = []
 running = True
+
+# printing some information before the game starts
+def print_info():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("\n===================================")
+    print(Fore.CYAN + "Settings Information:")
+    print(Fore.WHITE + "Players movement delay: " + Fore.GREEN + str(PLAYER_MOVE_DELAY) + Fore.RESET)
+    print(Fore.WHITE + "Enemy movement delay: " + Fore.YELLOW + str(ENEMY_MOVE_DELAY) + Fore.RESET)
+    print(Fore.WHITE + "Lights out: " + (Fore.GREEN if LIGHTS_OUT else Fore.RED) + str(LIGHTS_OUT) + Fore.RESET)
+    print(Fore.WHITE + "Debug mode: " + (Fore.GREEN if DEBUG_MODE else Fore.RED) + str(DEBUG_MODE) + Fore.RESET)
+    print(Fore.CYAN + "\nGame Information:")
+    print(Fore.WHITE + "Level: " + Fore.GREEN + str(level) + Fore.RESET)
+    print("===================================\n")
+
+print_info()
+
 while running:
     dt = clock.tick()
     current_time = pygame.time.get_ticks()
@@ -284,14 +303,12 @@ while running:
             freeze_enemy = True
             log_debug('Enemy freeze toggled off', level, entity='Debug')
 
-    # this is a comment to say that this code below me will automate the player movement when they press F2 
     if DEBUG_MODE and keys[pygame.K_F2] and current_time - auto_delay > 500:
         if not automated_movement:
             automated_movement = True
-            log_debug('Automated movement activated', level, entity='Debug') # idk why this prints like 10 million times when used
+            log_debug('Automated movement activated', level, entity='Debug')
             automated_start_time = time.time()
 
-    # blah blah blah F3 = god mode = true
     if DEBUG_MODE and keys[pygame.K_F3] and current_time - gm_delay > 500:
         gm_delay = current_time
         if god_mode:
@@ -301,7 +318,6 @@ while running:
             god_mode = True
             log_debug('God mode toggled on', level, entity='Debug')
 
-    # yes!! pressing F4 key will make me have no collision 
     if DEBUG_MODE and keys[pygame.K_F4] and current_time - nc_delay > 500:
         nc_delay = current_time
         if nc_mode:
@@ -311,75 +327,79 @@ while running:
             nc_mode = True
             log_debug('Noclip mode toggled on', level, entity='Debug')
 
-    # lazy bypass for player_move_delay when using automated movement
     if automated_movement or current_time - player_last_move_time >= PLAYER_MOVE_DELAY:
         player_old_position = tuple(player)
-        # so here ive added a seperate pathfinding algorithm for the automated movement debug
         if automated_movement:
             if not path:
                 path_start_time = time.time()
                 path = automove_pf(tuple(player), tuple(end)) 
                 path_end_time = time.time()
                 if not path: 
-                    # cleans up the automative movement debug print
-                    # this just adds a flag so that if the pathfinding for it hasnt been found yet it will print it
-                    # but just once, aswell it wont print all the other "Player moved X to X, X"
                     log_debug('Auto moving player', level, entity='Debug')
             if path:
                 next_position = path.pop(0)
                 if nc_mode or maze[next_position[0]][next_position[1]] != '*':
                     player[0], player[1] = next_position
 
-            if player == end:
-                log_debug('Automovement worked successfully', level, entity='Debug')
-                end_time = time.time()
-                log_debug(f'Total time: {end_time - automated_start_time:.2f}ms', level, entity='maze gen')
-                level += 1
-                log_debug('New maze generation', level, entity='maze gen')
-                generate_maze()
-                num_levels += 1
-                automated_movement = False
-                path = []  
-
-        # all player movement when pressing the w, a, s, d keys
-        # aswell printing those movements
-        # bug: when the user uses noclip it will turn the walls into walkable parts (turns them into . instead of *)
-        if keys[pygame.K_w] or keys[pygame.K_UP]:
-            if nc_mode or maze[player[1] - 1][player[0]] == '.':
-                maze[player[1]][player[0]] = '.'
+        # might be the stupidest thing ive ever done
+        # created a new movement for noclip mode
+        if nc_mode:
+            if keys[pygame.K_w] or keys[pygame.K_UP]:
                 player[1] -= 1
-                maze[player[1]][player[0]] = ' '
-                log_debug(f'Player moved up to ({player[0]}, {player[1]})', level, entity='player')
-            direction = 0
+                log_debug(f'Player noclipped up to ({player[0]}, {player[1]})', level, entity='player')
+                direction = 0
 
-        elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
-            if nc_mode or maze[player[1]][player[0] - 1] == '.':
-                maze[player[1]][player[0]] = '.'
+            elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
                 player[0] -= 1
-                maze[player[1]][player[0]] = ' '
-                log_debug(f'Player moved left to ({player[0]}, {player[1]})', level, entity='player')
-            direction = 3
+                log_debug(f'Player noclipped left to ({player[0]}, {player[1]})', level, entity='player')
+                direction = 3
 
-        elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
-            if nc_mode or maze[player[1] + 1][player[0]] == '.':
-                maze[player[1]][player[0]] = '.'
+            elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
                 player[1] += 1
-                maze[player[1]][player[0]] = ' '
-                log_debug(f'Player moved down to ({player[0]}, {player[1]})', level, entity='player')
-            direction = 2
+                log_debug(f'Player noclipped down to ({player[0]}, {player[1]})', level, entity='player')
+                direction = 2
 
-        elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
-            if nc_mode or maze[player[1]][player[0] + 1] == '.':
-                maze[player[1]][player[0]] = '.'
+            elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
                 player[0] += 1
-                maze[player[1]][player[0]] = ' '
-                log_debug(f'Player moved right to ({player[0]}, {player[1]})', level, entity='player')
-            direction = 1
+                log_debug(f'Player noclipped right to ({player[0]}, {player[1]})', level, entity='player')
+                direction = 1
+        else:
+            # normal non-noclip movement
+            if keys[pygame.K_w] or keys[pygame.K_UP]:
+                if maze[player[1] - 1][player[0]] == '.':
+                    maze[player[1]][player[0]] = '.'
+                    player[1] -= 1
+                    maze[player[1]][player[0]] = ' '
+                    log_debug(f'Player moved up to ({player[0]}, {player[1]})', level, entity='player')
+                direction = 0
+
+            elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
+                if maze[player[1]][player[0] - 1] == '.':
+                    maze[player[1]][player[0]] = '.'
+                    player[0] -= 1
+                    maze[player[1]][player[0]] = ' '
+                    log_debug(f'Player moved left to ({player[0]}, {player[1]})', level, entity='player')
+                direction = 3
+
+            elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
+                if maze[player[1] + 1][player[0]] == '.':
+                    maze[player[1]][player[0]] = '.'
+                    player[1] += 1
+                    maze[player[1]][player[0]] = ' '
+                    log_debug(f'Player moved down to ({player[0]}, {player[1]})', level, entity='player')
+                direction = 2
+
+            elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+                if maze[player[1]][player[0] + 1] == '.':
+                    maze[player[1]][player[0]] = '.'
+                    player[0] += 1
+                    maze[player[1]][player[0]] = ' '
+                    log_debug(f'Player moved right to ({player[0]}, {player[1]})', level, entity='player')
+                direction = 1
 
         player_last_move_time = current_time
         player_moved = tuple(player) != player_old_position
 
-    # processes gameplay (player movement, and quiting)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -387,10 +407,8 @@ while running:
             if event.key in [pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d]:
                 num_moves += 1 
 
-    # visual fix cause pygame is sucky 
     screen.fill((0, 0, 0))
 
-    # rendering the game and some other stuff ill comment in later (yes, im lazy)
     for i in range(HEIGHT):
         for j in range(WIDTH):
             player_distance = math.sqrt((player[0] - j)**2 + (player[1] - i)**2)
@@ -420,10 +438,22 @@ while running:
             enemy[0], enemy[1] = path[1]
         enemy_last_move_time = current_time
 
-        # sanity check for god mode if true it wont end game
         if player == enemy and not god_mode:
             log_stats(time_played, num_moves, num_levels)
             running = False
+    
+    if player == end:
+        if automated_movement:
+            log_debug('Automovement worked successfully', level, entity='Debug')
+            end_time = time.time()
+            log_debug(f'Total time: {end_time - automated_start_time:.2f}ms', level, entity='maze gen')
+            automated_movement = False
+            path = []
+        level += 1
+        log_debug('New maze generation', level, entity='maze gen')
+        generate_maze()
+        print_info()
+        num_levels += 1
 
     enemy_text = font.render('O', True, tuple(ENEMY_COLOR))
     screen.blit(enemy_text, (enemy[0] * SIZE + SIZE // 2 - enemy_text.get_width() // 2, enemy[1] * SIZE + SIZE // 2 - enemy_text.get_height() // 2))
