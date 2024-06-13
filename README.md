@@ -87,7 +87,8 @@
 ## Update 5 (date 06-13) [changelog](https://github.com/countervolts/Culminating/commit/47ead1cc025723b95f9bbd6503eda5fbc5846826)
 ### huge improvements to the enemies AI/pathfinding, added hearing, vision and patrol points
   - generates new [patrol points](https://github.com/countervolts/Culminating/commit/47ead1cc025723b95f9bbd6503eda5fbc5846826#diff-cc0ae3198bf596e4b93f96f7168c61db98f4b773af06509a829115ede915a079R328)
-  - huge improvements to enemy pathfinding/AI now does the following
+  - huge improvements to enemy pathfinding/AI
+  - *I was inspired to do this after seeing a video about the AI used in the game [Alien Isolation](https://en.wikipedia.org/wiki/Alien:_Isolation), and how the enemy AI works in that game* anyways it now does the following,
     - now can hear the player when they move
     - can see the player if they are in their sight (if ai sees player) (uses [bresenhamas algo](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm))
     - goes between 3 patrol points (or whatever `NUM_PATROL_POINTS` is set to)
