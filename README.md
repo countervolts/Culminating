@@ -1,7 +1,7 @@
 ## formatting
 
 ```
-# Update [Version] [changelog](LINK TO THE UPDATED GAME.PY NOT THE ENTIRE VERSION)
+## Update [Version] [changelog](LINK TO THE UPDATED GAME.PY NOT THE ENTIRE VERSION)
 (if the version is a whole number its a release, if its something else its just minor fixes or changes)
 
 ### tl;dr for update
