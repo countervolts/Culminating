@@ -1,4 +1,4 @@
-## GAME SETTINGS
+# GAME SETTINGS
 
 # game settings
 WIDTH = 21
@@ -30,6 +30,7 @@ MAZE_GENERATION_SPEED = 25 # the speed it will generate the maze infront of the 
 # misc settings
 FLASHLIGHT_RADIUS = 5
 FLASHLIGHT_ON = LIGHTS_OUT  # this should be a global variable
+PATROL_POINT_COLOR = (0, 255, 0)  # green
 
 # end point glow settings
 END_GLOW_RADIUS = 5
@@ -39,6 +40,12 @@ END_GLOW_ON = LIGHTS_OUT
 enemy = [WIDTH // 2, HEIGHT // 2] # dont change please it breaks the game currently
 ENEMY_FLASHLIGHT_RADIUS = 5
 ENEMY_FLASHLIGHT_ON = LIGHTS_OUT
+NUM_PATROL_POINTS = 3 # 3 is normal
+
+# consts for vision, hearing distances (advanced algo)
+VISION_DISTANCE = 5
+HEARING_DISTANCE = 3
+NOISE_DURATION = 5  # in seconds
 
 # debug settings
 DEBUG_MODE = True
