@@ -1,17 +1,19 @@
-# I love colorama
 from colorama import Fore, Style
 import re
 import os
 
+# this just doesnt work yet but it will create a settings.py with the default settings 
+# when chaging settings it just wont change the settings.py nor the game
+
 default_settings = """
-## GAME SETTINGS
+# GAME SETTINGS
 
 # game settings
 WIDTH = 21
 HEIGHT = 21 
 SIZE = 30 
 FONT_SIZE = 40 # size of the characters and other things that are classified as "font" 
-PLAYER_MOVE_DELAY = 185 
+PLAYER_MOVE_DELAY = 185
 ENEMY_MOVE_DELAY = 175 # bug: when the user freezes then unfreezes the game the enemy, they will go to 175 delay because of ln 255 in game.py
 
 # modifiers 
@@ -36,6 +38,7 @@ MAZE_GENERATION_SPEED = 25 # the speed it will generate the maze infront of the 
 # misc settings
 FLASHLIGHT_RADIUS = 5
 FLASHLIGHT_ON = LIGHTS_OUT  # this should be a global variable
+PATROL_POINT_COLOR = (0, 255, 0)  # green
 
 # end point glow settings
 END_GLOW_RADIUS = 5
@@ -45,6 +48,12 @@ END_GLOW_ON = LIGHTS_OUT
 enemy = [WIDTH // 2, HEIGHT // 2] # dont change please it breaks the game currently
 ENEMY_FLASHLIGHT_RADIUS = 5
 ENEMY_FLASHLIGHT_ON = LIGHTS_OUT
+NUM_PATROL_POINTS = 3 # 3 is normal
+
+# consts for vision, hearing distances (advanced algo)
+VISION_DISTANCE = 5
+HEARING_DISTANCE = 3
+NOISE_DURATION = 5  # in seconds
 
 # debug settings
 DEBUG_MODE = True
@@ -52,6 +61,7 @@ DEBUG_MODE = True
 # F2 - Auto move/play/solve whatever
 # F3 - God mode
 # F4 - Noclip
+
 """
 
 def backup():
@@ -131,12 +141,17 @@ def display_menu():
         ("End Glow ON", END_GLOW_ON, bool_input),
         ("Enemy Flashlight Radius", ENEMY_FLASHLIGHT_RADIUS, num_input),
         ("Enemy Flashlight ON", ENEMY_FLASHLIGHT_ON, bool_input),
+        ("Number of Patrol Points", NUM_PATROL_POINTS, num_input),
+        ("Vision Distance", VISION_DISTANCE, num_input),
+        ("Hearing Distance", HEARING_DISTANCE, num_input),
+        ("Noise Duration (s)", NOISE_DURATION, num_input),
         ("Debug Mode", DEBUG_MODE, bool_input),
         ("Walkable Color", WALKABLE_COLOR, colour_input),
         ("Wall Color", WALL_COLOR, colour_input),
         ("End Color", END_COLOR, colour_input),
         ("Player Color", PLAYER_COLOR, colour_input),
         ("Enemy Color", ENEMY_COLOR, colour_input),
+        ("Patrol Point Color", PATROL_POINT_COLOR, colour_input),
     ]
 
     print("Game Settings Menu")
