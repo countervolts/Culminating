@@ -32,7 +32,11 @@ automated_movement = False
 automated_start_time = 0
 
 def heuristic(node, end):
-    return abs(node[0] - end[0]) + abs(node[1] - end[1])
+    dx, dy = abs(node[0] - end[0]), abs(node[1] - end[1])
+    distance = dx + dy
+    if not line_of_sight_clear(node, end):
+        distance += WALL_PENALTY
+    return distance
 
 player_last_move_time = pygame.time.get_ticks()
 enemy_last_move_time = pygame.time.get_ticks()
@@ -162,7 +166,6 @@ def log_debug(message, level, entity=None):
 time_played = 0
 num_moves = 0
 num_levels = 0
-file = 0
 
 # func for logging the users stats then writing them to a file
 def log_stats(time_played, num_moves, num_levels):
@@ -174,12 +177,11 @@ def log_stats(time_played, num_moves, num_levels):
     log_debug(f"Number of levels completed: {num_levels}", level, entity='Stats')
 
     # writing the file that will contain the users stats
-    with open(f'Stats{file}.txt', 'w') as f:
+    with open(f'Stats.txt', 'w') as f:
         f.write(f"Time played: {time_played} seconds ({time_played_minutes:.2f} minutes)\n")
         f.write(f"Number of moves: {num_moves}\n")
         f.write(f"Number of levels completed: {num_levels}\n")\
         
-        file += 1 
 
 # playa noises
 player_noise = None
@@ -194,17 +196,23 @@ def enemy_pathfinding(start, end):
     current_time = time.time()
     heard_status = None
 
-    if player_noise and current_time - player_noise_time <= NOISE_DURATION:
+    dx, dy = player[0] - start[0], player[1] - start[1] 
+    distance = math.sqrt(dx * dx + dy * dy)
+    if distance <= VISION_DISTANCE:
+        if line_of_sight_clear(start, tuple(player)):
+            end = tuple(player)
+            log_debug(f'AI saw player at ({end[0]}, {end[1]})', level, entity='enemy')
+    elif player_noise and current_time - player_noise_time <= NOISE_DURATION:
         dx, dy = player_noise[0] - start[0], player_noise[1] - start[1]
         distance = math.sqrt(dx * dx + dy * dy)
         if distance <= HEARING_DISTANCE:
             end = player_noise
             heard_status = True
-            return [end] 
         else:
             heard_status = False
     else:
         end = patrol_points[current_patrol_point]
+        heard_status = False
 
     if current_time - last_print_time >= 2 or heard_status != last_heard_status:
         if heard_status is True:
@@ -431,6 +439,8 @@ while running:
             nc_mode = True
             log_debug('Noclip mode toggled on', level, entity='Debug')
 
+    pdbg_print = True
+
     if automated_movement or current_time - player_last_move_time >= PLAYER_MOVE_DELAY:
         player_old_position = tuple(player)
         if automated_movement:
@@ -440,10 +450,14 @@ while running:
                 path_end_time = time.time()
                 if not path: 
                     log_debug('Auto moving player', level, entity='Debug')
+                    pdbg_print = True
             if path:
                 next_position = path.pop(0)
                 if nc_mode or maze[next_position[0]][next_position[1]] != '*':
                     player[0], player[1] = next_position
+        elif not pdbg_print: 
+            log_debug('Auto moving player', level, entity='Debug')
+            pdbg_print = True  
 
         # might be the stupidest thing ive ever done
         # created a new movement for noclip mode
@@ -484,7 +498,6 @@ while running:
                     maze[player[1]][player[0]] = '.'
                     player[1] -= 1
                     maze[player[1]][player[0]] = ' '
-                    log_debug(f'Player moved up to ({player[0]}, {player[1]})', level, entity='player')
                     direction = 0
 
             elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
@@ -492,7 +505,6 @@ while running:
                     maze[player[1]][player[0]] = '.'
                     player[0] -= 1
                     maze[player[1]][player[0]] = ' '
-                    log_debug(f'Player moved left to ({player[0]}, {player[1]})', level, entity='player')
                     direction = 3
 
             elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
@@ -500,7 +512,6 @@ while running:
                     maze[player[1]][player[0]] = '.'
                     player[1] += 1
                     maze[player[1]][player[0]] = ' '
-                    log_debug(f'Player moved down to ({player[0]}, {player[1]})', level, entity='player')
                     direction = 2
 
             elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
@@ -508,7 +519,6 @@ while running:
                     maze[player[1]][player[0]] = '.'
                     player[0] += 1
                     maze[player[1]][player[0]] = ' '
-                    log_debug(f'Player moved right to ({player[0]}, {player[1]})', level, entity='player')
                     direction = 1
 
         player_last_move_time = current_time
@@ -519,7 +529,12 @@ while running:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key in [pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d]:
-                num_moves += 1 
+                num_moves += 1
+        else:
+            pass 
+    else:
+        pass  
+
 
     screen.fill((0, 0, 0))
 
@@ -555,13 +570,32 @@ while running:
     if current_time - enemy_last_move_time >= ENEMY_MOVE_DELAY:
         path_start_time = time.time()
 
-        # update the target location
-        if enemy_sees_player() or enemy_hears_player():
+        last_seen = None
+        last_seen_time = None
+        last_heard = None
+
+        if enemy_sees_player():
             target = tuple(player)
+            last_seen = target 
+            last_seen_time = time.time()
+            print("Enemy is pursuing the player.") 
+        elif enemy_hears_player():
+            last_heard = tuple(player_noise)
+            target = last_heard
+            print("Enemy is moving towards the last heard noise.")
+        elif last_seen and time.time() - last_seen_time <= 5:
+            target = last_seen
+        elif last_heard:
+            target = last_heard
         else:
+            last_seen = None 
+            last_seen_time = None 
+            last_heard = None
             if tuple(enemy) == patrol_points[current_patrol_point] or not patrol_points:
                 current_patrol_point = (current_patrol_point + 1) % len(patrol_points)
             target = patrol_points[current_patrol_point]
+            if last_seen is not None:
+                print("Enemy has lost sight of the player and is returning to patrol.") 
 
         path = enemy_pathfinding(tuple(enemy), target)
         if path and len(path) > 1:
@@ -576,21 +610,21 @@ while running:
             log_debug(f'algorithm for enemy movement: {(path_end_time - path_start_time) * 1000:.2f}µs', level, entity='enemy')
         enemy_last_move_time = current_time
 
-    if player == enemy and not god_mode:
-        log_stats(time_played, num_moves, num_levels)
-        running = False
+        if player == enemy and not god_mode:
+            log_stats(time_played, num_moves, num_levels)
+            running = False
 
-    if player == end:
-        if automated_movement:
-            log_debug('Automovement worked successfully', level, entity='Debug')
+        if player == end:
+            if automated_movement:
+                log_debug('Automovement worked successfully', level, entity='Debug')
             end_time = time.time()
             log_debug(f'Total time: {end_time - automated_start_time:.2f}ms', level, entity='maze gen')
             automated_movement = False
             path = []
-        level += 1
-        log_debug('New maze generation', level, entity='maze gen')
-        generate_maze()
-        print_info()
-        num_levels += 1
+            level += 1
+            log_debug('New maze generation', level, entity='maze gen')
+            generate_maze()
+            print_info()
+            num_levels += 1
 
 pygame.quit()
