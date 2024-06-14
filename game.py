@@ -385,7 +385,7 @@ def print_info():
     print(Fore.WHITE + "Debug mode: " + (Fore.GREEN if DEBUG_MODE else Fore.RED) + str(DEBUG_MODE) + Fore.RESET)
     print(Fore.CYAN + "\nGame Information:")
     print(Fore.WHITE + "Level: " + Fore.GREEN + str(level) + Fore.RESET)
-    print(Fore.WHITE + "AI version: " + Fore.GREEN + "1.2.0 " + Fore.RESET)
+    print(Fore.WHITE + "AI version: " + Fore.GREEN + "1.3.0 " + Fore.RESET)
     print("===================================\n")
 
 print_info()
