@@ -102,3 +102,13 @@
     - `NOISE_DURATION` - how long noise will last when the user moves
   - updated (menu.py)[https://github.com/countervolts/Culminating/commit/0125bbb298c29b201a1725f1e633da722b525c80] to include the previously said consts
  
+## Update 6 (date 06-14) [changelog](https://github.com/countervolts/Culminating/commit/dec207ad05f3d5d16607e6875395f6ecfda67ed1)
+### improving emeny ai again
+  - added new setting `WALL_PENALTY`
+    - this is used to combat the enemy when they hear the player and attempt to just walk through a wall to get them
+  - fixed auto move print, added a flag so it will ONLY print once
+  - improved the following for the enemy ai
+    - hearing
+      - enemy will now go to where they last heard the player to "investigate" (this is still a WIP, not completely done) 
+    - vision
+      - if the enemy sees the player, then loses sight it will pursuit them unless LOS (line of sight) is lost for 5 seconds            
