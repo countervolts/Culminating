@@ -49,6 +49,7 @@ enemy = [WIDTH // 2, HEIGHT // 2] # dont change please it breaks the game curren
 ENEMY_FLASHLIGHT_RADIUS = 5
 ENEMY_FLASHLIGHT_ON = LIGHTS_OUT
 NUM_PATROL_POINTS = 3 # 3 is normal
+WALL_PENALTY = 10
 
 # consts for vision, hearing distances (advanced algo)
 VISION_DISTANCE = 5
@@ -61,7 +62,6 @@ DEBUG_MODE = True
 # F2 - Auto move/play/solve whatever
 # F3 - God mode
 # F4 - Noclip
-
 """
 
 def backup():
@@ -152,6 +152,7 @@ def display_menu():
         ("Player Color", PLAYER_COLOR, colour_input),
         ("Enemy Color", ENEMY_COLOR, colour_input),
         ("Patrol Point Color", PATROL_POINT_COLOR, colour_input),
+        ("Wall Penalty", WALL_PENALTY, num_input),
     ]
 
     print("Game Settings Menu")
