@@ -41,6 +41,7 @@ enemy = [WIDTH // 2, HEIGHT // 2] # dont change please it breaks the game curren
 ENEMY_FLASHLIGHT_RADIUS = 5
 ENEMY_FLASHLIGHT_ON = LIGHTS_OUT
 NUM_PATROL_POINTS = 3 # 3 is normal
+WALL_PENALTY = 10
 
 # consts for vision, hearing distances (advanced algo)
 VISION_DISTANCE = 5
