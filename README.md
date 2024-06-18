@@ -111,4 +111,18 @@
     - hearing
       - enemy will now go to where they last heard the player to "investigate" (this is still a WIP, not completely done) 
     - vision
-      - if the enemy sees the player, then loses sight it will pursuit them unless LOS (line of sight) is lost for 5 seconds            
+      - if the enemy sees the player, then loses sight it will pursuit them unless LOS (line of sight) is lost for 5 seconds
+        
+## Update 6 (date 06-14) [changelog](https://github.com/countervolts/Culminating/commit/d19a923df3ce57a8ec4c9bcd96120ab54c6056af)
+### fixed settings changing, new settings, fixed error with enemy
+  - added new setting `MIN_DISTANCE`, `ENEMY_FREEZE`
+    - `MIN_DISTANCE` is used for making sure patrol points arent too close
+    - `ENEMY_FREEZE` used for the freeze enemy debug feature
+  - fixed the enemys hearing so they will investigate last heard noise
+  - basically rewrote patrol point generation [found here](https://github.com/countervolts/Culminating/commit/d19a923df3ce57a8ec4c9bcd96120ab54c6056af#diff-cc0ae3198bf596e4b93f96f7168c61db98f4b773af06509a829115ede915a079R349)
+  - game settings now save!!!!
+    - due do me not wanting to make it reread settings.py every time, you can change the values in one game then next run they will take affect
+  - also orginized the displaying of `display_menu` neater
+  - renamed `log_debug` to `debugging` [here](https://github.com/countervolts/Culminating/commit/d19a923df3ce57a8ec4c9bcd96120ab54c6056af#diff-cc0ae3198bf596e4b93f96f7168c61db98f4b773af06509a829115ede915a079R147)
+  - renamed `line_of_sight_clear` to `LOS_clear` [here](https://github.com/countervolts/Culminating/commit/d19a923df3ce57a8ec4c9bcd96120ab54c6056af#diff-cc0ae3198bf596e4b93f96f7168c61db98f4b773af06509a829115ede915a079R282)
+    
