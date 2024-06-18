@@ -113,7 +113,7 @@
     - vision
       - if the enemy sees the player, then loses sight it will pursuit them unless LOS (line of sight) is lost for 5 seconds
         
-## Update 6 (date 06-14) [changelog](https://github.com/countervolts/Culminating/commit/d19a923df3ce57a8ec4c9bcd96120ab54c6056af)
+## Update 7 (date 06-18) [changelog](https://github.com/countervolts/Culminating/commit/d19a923df3ce57a8ec4c9bcd96120ab54c6056af)
 ### fixed settings changing, new settings, fixed error with enemy
   - added new setting `MIN_DISTANCE`, `ENEMY_FREEZE`
     - `MIN_DISTANCE` is used for making sure patrol points arent too close
