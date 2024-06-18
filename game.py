@@ -17,8 +17,7 @@ from settings import *
 init() # for colorama
 
 # displaying the settings menu before the maze is generated
-# display_menu() 
-# commented out cus doesnt work
+display_menu() 
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH * SIZE, HEIGHT * SIZE))
@@ -34,7 +33,7 @@ automated_start_time = 0
 def heuristic(node, end):
     dx, dy = abs(node[0] - end[0]), abs(node[1] - end[1])
     distance = dx + dy
-    if not line_of_sight_clear(node, end):
+    if not LOS_clear(node, end):
         distance += WALL_PENALTY
     return distance
 
@@ -124,9 +123,8 @@ def carve_sp(start, end):
         else:
             stack.pop()
 
-# func that generates the maze       
 def generate_maze():
-    global maze, player, enemy
+    global maze, player, enemy, patrol_points
     maze = [['*' for _ in range(WIDTH)] for _ in range(HEIGHT)]
     for y in range(1, HEIGHT, 2):
         for x in range(1, WIDTH, 2):
@@ -136,13 +134,17 @@ def generate_maze():
     carve_sp((1, 1), end)
     player = [1, 1]
     enemy = [WIDTH // 2, HEIGHT // 2] 
+
+    # Generate new patrol points for each maze generation
+    patrol_points = generate_patrol_points()
+
     # a attempt from me that will make multiple paths to the end (bug idiot <- me)
     paths = 0
     while paths < 3 and dfs((1, 1), end):
         paths += 1
         remove_path((1, 1), end)
 
-def log_debug(message, level, entity=None):
+def debugging(message, level, entity=None):
     colors = [Fore.RED, Fore.GREEN, Fore.YELLOW, Fore.BLUE, Fore.MAGENTA, Fore.CYAN, Fore.LIGHTRED_EX, Fore.LIGHTGREEN_EX, Fore.LIGHTYELLOW_EX, Fore.LIGHTBLUE_EX, Fore.LIGHTMAGENTA_EX, Fore.LIGHTCYAN_EX]
     if entity == 'Debug':
         color = Fore.RED
@@ -171,23 +173,31 @@ num_levels = 0
 def log_stats(time_played, num_moves, num_levels):
     global file
     time_played_minutes = time_played / 60
-    log_debug(f"\nPlayer stats:", level, entity='Stats1')
-    log_debug(f"Time played: {time_played} seconds ({time_played_minutes:.2f} minutes)", level, entity='Stats')
-    log_debug(f"Number of moves: {num_moves}", level, entity='Stats')
-    log_debug(f"Number of levels completed: {num_levels}", level, entity='Stats')
+    print("\nPlayer stats:")
+    print(f"Time played: {time_played} seconds ({time_played_minutes:.2f} minutes)")
+    print(f"Number of moves: {num_moves}")
+    print(f"Number of levels completed: {num_levels}")
 
     # writing the file that will contain the users stats
     with open(f'Stats.txt', 'w') as f:
         f.write(f"Time played: {time_played} seconds ({time_played_minutes:.2f} minutes)\n")
         f.write(f"Number of moves: {num_moves}\n")
-        f.write(f"Number of levels completed: {num_levels}\n")\
-        
+        f.write(f"Number of levels completed: {num_levels}\n")
 
-# playa noises
-player_noise = None
-player_noise_time = None
-last_print_time = 0
-last_heard_status = None
+
+# printing some information before the game starts
+def print_info():
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("\n===================================")
+    print(Fore.CYAN + "Settings Information:")
+    print(Fore.WHITE + "Players movement delay: " + Fore.GREEN + str(PLAYER_MOVE_DELAY) + Fore.RESET)
+    print(Fore.WHITE + "Enemy movement delay: " + Fore.YELLOW + str(ENEMY_MOVE_DELAY) + Fore.RESET)
+    print(Fore.WHITE + "Lights out: " + (Fore.GREEN if LIGHTS_OUT else Fore.RED) + str(LIGHTS_OUT) + Fore.RESET)
+    print(Fore.WHITE + "Debug mode: " + (Fore.GREEN if DEBUG_MODE else Fore.RED) + str(DEBUG_MODE) + Fore.RESET)
+    print(Fore.CYAN + "\nGame Information:")
+    print(Fore.WHITE + "Level: " + Fore.GREEN + str(level) + Fore.RESET)
+    print(Fore.WHITE + "AI version: " + Fore.GREEN + "1.3.5" + Fore.RESET)
+    print("===================================\n")
 
 # enemy movement algorithm (this uses a star algo https://en.wikipedia.org/wiki/A*_search_algorithm)
 def enemy_pathfinding(start, end):
@@ -199,9 +209,9 @@ def enemy_pathfinding(start, end):
     dx, dy = player[0] - start[0], player[1] - start[1] 
     distance = math.sqrt(dx * dx + dy * dy)
     if distance <= VISION_DISTANCE:
-        if line_of_sight_clear(start, tuple(player)):
+        if LOS_clear(start, tuple(player)):
             end = tuple(player)
-            log_debug(f'AI saw player at ({end[0]}, {end[1]})', level, entity='enemy')
+            debugging(f'AI saw player at ({end[0]}, {end[1]})', level, entity='enemy')
     elif player_noise and current_time - player_noise_time <= NOISE_DURATION:
         dx, dy = player_noise[0] - start[0], player_noise[1] - start[1]
         distance = math.sqrt(dx * dx + dy * dy)
@@ -216,9 +226,9 @@ def enemy_pathfinding(start, end):
 
     if current_time - last_print_time >= 2 or heard_status != last_heard_status:
         if heard_status is True:
-            log_debug(f'AI heard noise at ({end[0]}, {end[1]})', level, entity='enemy')
+            debugging(f'AI heard noise at ({end[0]}, {end[1]})', level, entity='enemy')
         elif heard_status is False:
-            log_debug(f'AI did not hear noise', level, entity='enemy')
+            debugging(f'AI did not hear noise', level, entity='enemy')
 
         # update the last print time and heard status
         last_print_time = current_time
@@ -227,9 +237,9 @@ def enemy_pathfinding(start, end):
     dx, dy = player[0] - start[0], player[1] - start[1] 
     distance = math.sqrt(dx * dx + dy * dy)
     if distance <= VISION_DISTANCE:
-        if line_of_sight_clear(start, tuple(player)):
+        if LOS_clear(start, tuple(player)):
             end = tuple(player)
-            log_debug(f'AI saw player at ({end[0]}, {end[1]})', level, entity='enemy')
+            debugging(f'AI saw player at ({end[0]}, {end[1]})', level, entity='enemy')
 
     start_time = time.time()
     g = {start: 0}
@@ -266,10 +276,10 @@ def enemy_pathfinding(start, end):
 
     end_time = time.time()
     if DEBUG_MODE:
-        log_debug(f'algorithm failed: {end_time - start_time:.2f}ms', level, entity='enemy')
+        debugging(f'algorithm failed: {end_time - start_time:.2f}ms', level, entity='enemy')
     return []
 
-def line_of_sight_clear(start, end):
+def LOS_clear(start, end):
     # bresenhama algo (https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm)
     points_in_line = []
     x0, y0 = start
@@ -305,12 +315,12 @@ def line_of_sight_clear(start, end):
 
     return True
 
-def enemy_sees_player():
+def sees_player():
     dx, dy = player[0] - enemy[0], player[1] - enemy[1]
     distance = math.sqrt(dx * dx + dy * dy)
-    return distance <= VISION_DISTANCE and line_of_sight_clear(tuple(enemy), tuple(player))
+    return distance <= VISION_DISTANCE and LOS_clear(tuple(enemy), tuple(player))
 
-def enemy_hears_player():
+def hears_player():
     if player_noise and time.time() - player_noise_time <= NOISE_DURATION:
         dx, dy = player_noise[0] - enemy[0], player_noise[1] - enemy[1]
         distance = math.sqrt(dx * dx + dy * dy)
@@ -333,15 +343,31 @@ def automove_pf(start, end):
 
 clock = pygame.time.Clock()
 
+def dist(point1, point2):
+    return ((point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)**0.5
+
 def generate_patrol_points():
     patrol_points = []
-    for _ in range(NUM_PATROL_POINTS):
-        while True:
-            point = (random.randint(0, WIDTH-1), random.randint(0, HEIGHT-1))
-            if maze[point[1]][point[0]] != '*': # checks if its a wall
+    while len(patrol_points) < NUM_PATROL_POINTS:
+        point = (random.randint(0, WIDTH - 1), random.randint(0, HEIGHT - 1))
+        if maze[point[1]][point[0]] != '*':
+            if all(dist(point, existing_point) >= MIN_DISTANCE for existing_point in patrol_points):
                 patrol_points.append(point)
-                break
     return patrol_points
+
+def clear_patrol_points():
+    global patrol_points
+    patrol_points = []
+
+def generate_new_patrol_points():
+    clear_patrol_points()
+    new_patrol_points = []
+    while len(new_patrol_points) < NUM_PATROL_POINTS:
+        point = (random.randint(0, WIDTH - 1), random.randint(0, HEIGHT - 1))
+        if maze[point[1]][point[0]] != '*':
+            if all(distance(point, existing_point) >= MIN_DISTANCE for existing_point in new_patrol_points):
+                new_patrol_points.append(point)
+    return new_patrol_points
 
 # gens maze then the patrol points
 generate_maze()
@@ -374,19 +400,19 @@ start_time = pygame.time.get_ticks()
 path = []
 running = True
 
-# printing some information before the game starts
-def print_info():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print("\n===================================")
-    print(Fore.CYAN + "Settings Information:")
-    print(Fore.WHITE + "Players movement delay: " + Fore.GREEN + str(PLAYER_MOVE_DELAY) + Fore.RESET)
-    print(Fore.WHITE + "Enemy movement delay: " + Fore.YELLOW + str(ENEMY_MOVE_DELAY) + Fore.RESET)
-    print(Fore.WHITE + "Lights out: " + (Fore.GREEN if LIGHTS_OUT else Fore.RED) + str(LIGHTS_OUT) + Fore.RESET)
-    print(Fore.WHITE + "Debug mode: " + (Fore.GREEN if DEBUG_MODE else Fore.RED) + str(DEBUG_MODE) + Fore.RESET)
-    print(Fore.CYAN + "\nGame Information:")
-    print(Fore.WHITE + "Level: " + Fore.GREEN + str(level) + Fore.RESET)
-    print(Fore.WHITE + "AI version: " + Fore.GREEN + "1.3.0 " + Fore.RESET)
-    print("===================================\n")
+player_noise = None
+player_noise_time = None
+
+last_print_time = 0
+last_heard_status = None
+
+last_seen = None 
+last_seen_time = None 
+
+last_heard = None
+last_heard_time = None
+
+in_pursuit = False
 
 print_info()
 
@@ -407,37 +433,37 @@ while running:
     if DEBUG_MODE and keys[pygame.K_F1] and current_time - freeze_delay > 500:
         freeze_delay = current_time
         if freeze_enemy:
-            ENEMY_MOVE_DELAY = 1000000  # now this is a pro freeze method
+            ENEMY_MOVE_DELAY = ENEMY_FREEZE  # now this is a pro freeze method
             freeze_enemy = False
-            log_debug('Enemy freeze toggled on', level, entity='Debug')
+            debugging('Enemy freeze toggled on', level, entity='Debug')
         else:
-            ENEMY_MOVE_DELAY = 175
+            ENEMY_MOVE_DELAY = ENEMY_MOVE_DELAY
             freeze_enemy = True
-            log_debug('Enemy freeze toggled off', level, entity='Debug')
+            debugging('Enemy freeze toggled off', level, entity='Debug')
 
     if DEBUG_MODE and keys[pygame.K_F2] and current_time - auto_delay > 500:
         if not automated_movement:
             automated_movement = True
-            log_debug('Automated movement activated', level, entity='Debug')
+            debugging('Automated movement activated', level, entity='Debug')
             automated_start_time = time.time()
 
     if DEBUG_MODE and keys[pygame.K_F3] and current_time - gm_delay > 500:
         gm_delay = current_time
         if god_mode:
             god_mode = False
-            log_debug('God mode toggled off', level, entity='Debug')
+            debugging('God mode toggled off', level, entity='Debug')
         else:
             god_mode = True
-            log_debug('God mode toggled on', level, entity='Debug')
+            debugging('God mode toggled on', level, entity='Debug')
 
     if DEBUG_MODE and keys[pygame.K_F4] and current_time - nc_delay > 500:
         nc_delay = current_time
         if nc_mode:
             nc_mode = False
-            log_debug('Noclip mode toggled off', level, entity='Debug')
+            debugging('Noclip mode toggled off', level, entity='Debug')
         else:
             nc_mode = True
-            log_debug('Noclip mode toggled on', level, entity='Debug')
+            debugging('Noclip mode toggled on', level, entity='Debug')
 
     pdbg_print = True
 
@@ -449,14 +475,14 @@ while running:
                 path = automove_pf(tuple(player), tuple(end)) 
                 path_end_time = time.time()
                 if not path: 
-                    log_debug('Auto moving player', level, entity='Debug')
+                    debugging('Attempting to auto moving player', level, entity='Debug')
                     pdbg_print = True
             if path:
                 next_position = path.pop(0)
                 if nc_mode or maze[next_position[0]][next_position[1]] != '*':
                     player[0], player[1] = next_position
         elif not pdbg_print: 
-            log_debug('Auto moving player', level, entity='Debug')
+            debugging('Auto moving player', level, entity='Debug')
             pdbg_print = True  
 
         # might be the stupidest thing ive ever done
@@ -464,22 +490,22 @@ while running:
         if nc_mode:
             if keys[pygame.K_w] or keys[pygame.K_UP]:
                 player[1] -= 1
-                log_debug(f'Player noclipped up to ({player[0]}, {player[1]})', level, entity='player')
+                debugging(f'Player noclipped up to ({player[0]}, {player[1]})', level, entity='player')
                 direction = 0
 
             elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
                 player[0] -= 1
-                log_debug(f'Player noclipped left to ({player[0]}, {player[1]})', level, entity='player')
+                debugging(f'Player noclipped left to ({player[0]}, {player[1]})', level, entity='player')
                 direction = 3
 
             elif keys[pygame.K_s] or keys[pygame.K_DOWN]:
                 player[1] += 1
-                log_debug(f'Player noclipped down to ({player[0]}, {player[1]})', level, entity='player')
+                debugging(f'Player noclipped down to ({player[0]}, {player[1]})', level, entity='player')
                 direction = 2
 
             elif keys[pygame.K_d] or keys[pygame.K_RIGHT]:
                 player[0] += 1
-                log_debug(f'Player noclipped right to ({player[0]}, {player[1]})', level, entity='player')
+                debugging(f'Player noclipped right to ({player[0]}, {player[1]})', level, entity='player')
                 direction = 1
         else:
             # normal non-noclip movement
@@ -491,7 +517,7 @@ while running:
                 # printing the player made noise when moving
                 player_noise = player.copy()
                 player_noise_time = time.time()
-                log_debug(f'Player made noise at ({player_noise[0]}, {player_noise[1]})', level, entity='player')
+                debugging(f'Player made noise at ({player_noise[0]}, {player_noise[1]})', level, entity='player')
 
             if keys[pygame.K_w] or keys[pygame.K_UP]:
                 if maze[player[1] - 1][player[0]] == '.':
@@ -530,11 +556,6 @@ while running:
         elif event.type == pygame.KEYDOWN:
             if event.key in [pygame.K_w, pygame.K_a, pygame.K_s, pygame.K_d]:
                 num_moves += 1
-        else:
-            pass 
-    else:
-        pass  
-
 
     screen.fill((0, 0, 0))
 
@@ -570,32 +591,28 @@ while running:
     if current_time - enemy_last_move_time >= ENEMY_MOVE_DELAY:
         path_start_time = time.time()
 
-        last_seen = None
-        last_seen_time = None
-        last_heard = None
-
-        if enemy_sees_player():
+        if sees_player():
             target = tuple(player)
             last_seen = target 
             last_seen_time = time.time()
+            in_pursuit = True
             print("Enemy is pursuing the player.") 
-        elif enemy_hears_player():
+        elif hears_player():
             last_heard = tuple(player_noise)
+            last_heard_time = time.time()
             target = last_heard
-            print("Enemy is moving towards the last heard noise.")
-        elif last_seen and time.time() - last_seen_time <= 5:
-            target = last_seen
-        elif last_heard:
+            in_pursuit = False
+            print("Enemy is moving towards the last heard noise. (investigating)")
+        elif last_heard and time.time() - last_heard_time <= 5:
             target = last_heard
+            in_pursuit = False
         else:
-            last_seen = None 
-            last_seen_time = None 
-            last_heard = None
+            if in_pursuit:
+                print("Enemy has lost sight of the player and is returning to patrol.") 
             if tuple(enemy) == patrol_points[current_patrol_point] or not patrol_points:
                 current_patrol_point = (current_patrol_point + 1) % len(patrol_points)
             target = patrol_points[current_patrol_point]
-            if last_seen is not None:
-                print("Enemy has lost sight of the player and is returning to patrol.") 
+            in_pursuit = False
 
         path = enemy_pathfinding(tuple(enemy), target)
         if path and len(path) > 1:
@@ -607,24 +624,25 @@ while running:
 
         path_end_time = time.time()
         if DEBUG_MODE and player_moved:
-            log_debug(f'algorithm for enemy movement: {(path_end_time - path_start_time) * 1000:.2f}µs', level, entity='enemy')
+            debugging(f'algorithm for enemy movement: {(path_end_time - path_start_time) * 1000:.2f}µs', level, entity='enemy')
         enemy_last_move_time = current_time
 
         if player == enemy and not god_mode:
             log_stats(time_played, num_moves, num_levels)
             running = False
 
-        if player == end:
-            if automated_movement:
-                log_debug('Automovement worked successfully', level, entity='Debug')
-            end_time = time.time()
-            log_debug(f'Total time: {end_time - automated_start_time:.2f}ms', level, entity='maze gen')
-            automated_movement = False
-            path = []
-            level += 1
-            log_debug('New maze generation', level, entity='maze gen')
-            generate_maze()
-            print_info()
-            num_levels += 1
+    if player == end:
+        if automated_movement:
+            debugging('Automovement worked successfully', level, entity='Debug')
+        end_time = time.time()
+        debugging(f'Total time: {end_time - automated_start_time:.2f}ms', level, entity='maze gen')
+        automated_movement = False
+        path = []
+        level += 1
+        debugging('New maze generation', level, entity='maze gen')
+        clear_patrol_points() 
+        generate_maze()
+        print_info()
+        num_levels += 1
 
 pygame.quit()
