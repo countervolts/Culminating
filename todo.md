@@ -19,15 +19,15 @@
 - [x] show the user something between levels (possibly use the end game stats logging).
 - [x] show game details before the game starts.
 - [x] fix line 317 (no longer that line) with player noclip being buggy when walking into walls.
+- [x] menu currently doesnt update the settings.py
 
 ## stuff todo
 
-### new features
-
+# new features
+## (dnf, did not finish)
 - [ ] make the game get harder as the levels go on:
     - make enemy move faster (reduce the time between enemy moves)
     - make maze bigger (increase width height every level or two)
     - [?] implement difficulty scale in settings.py
 
 ### bug fixes
-- [ ] menu currently doesnt update the settings.py
