@@ -1,5 +1,3 @@
-# GAME SETTINGS
-
 # game settings
 WIDTH = 21
 HEIGHT = 21 
@@ -31,6 +29,7 @@ MAZE_GENERATION_SPEED = 25 # the speed it will generate the maze infront of the 
 FLASHLIGHT_RADIUS = 5
 FLASHLIGHT_ON = LIGHTS_OUT  # this should be a global variable
 PATROL_POINT_COLOR = (0, 255, 0)  # green
+MIN_DISTANCE = 10
 
 # end point glow settings
 END_GLOW_RADIUS = 5
@@ -42,6 +41,7 @@ ENEMY_FLASHLIGHT_RADIUS = 5
 ENEMY_FLASHLIGHT_ON = LIGHTS_OUT
 NUM_PATROL_POINTS = 3 # 3 is normal
 WALL_PENALTY = 10
+ENEMY_FREEZE = 1000000000 # yeah now this is a good freeze method
 
 # consts for vision, hearing distances (advanced algo)
 VISION_DISTANCE = 5
