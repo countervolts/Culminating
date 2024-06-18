@@ -6,8 +6,6 @@ import os
 # when chaging settings it just wont change the settings.py nor the game
 
 default_settings = """
-# GAME SETTINGS
-
 # game settings
 WIDTH = 21
 HEIGHT = 21 
@@ -39,6 +37,7 @@ MAZE_GENERATION_SPEED = 25 # the speed it will generate the maze infront of the 
 FLASHLIGHT_RADIUS = 5
 FLASHLIGHT_ON = LIGHTS_OUT  # this should be a global variable
 PATROL_POINT_COLOR = (0, 255, 0)  # green
+MIN_DISTANCE = 10
 
 # end point glow settings
 END_GLOW_RADIUS = 5
@@ -50,6 +49,7 @@ ENEMY_FLASHLIGHT_RADIUS = 5
 ENEMY_FLASHLIGHT_ON = LIGHTS_OUT
 NUM_PATROL_POINTS = 3 # 3 is normal
 WALL_PENALTY = 10
+ENEMY_FREEZE = 1000000000 # yeah now this is a good freeze method
 
 # consts for vision, hearing distances (advanced algo)
 VISION_DISTANCE = 5
@@ -157,10 +157,19 @@ def display_menu():
 
     print("Game Settings Menu")
     print("------------------")
-    for i, (name, value, _) in enumerate(settings, start=1):
-        print(f"{i}. {Fore.BLUE}{name}{Style.RESET_ALL} (current: {Fore.GREEN}{value}{Style.RESET_ALL})")
+    half = len(settings) // 2
+    max_len = max(len(name) for name, _, _ in settings) + 50
+    for i in range(half):
+        name1, value1, _ = settings[i]
+        name2, value2, _ = settings[i + half]
+        print(f"{i+1}. {Fore.BLUE}{name1}{Style.RESET_ALL} (current: {Fore.GREEN}{value1}{Style.RESET_ALL})".ljust(max_len) + f"{i+half+1}. {Fore.BLUE}{name2}{Style.RESET_ALL} (current: {Fore.GREEN}{value2}{Style.RESET_ALL})")
 
-    print("\nEnter the number of the setting you want to change (or press Enter to skip):")
+    if len(settings) % 2:
+        name, value, _ = settings[-1]
+        print(f"{len(settings)}. {Fore.BLUE}{name}{Style.RESET_ALL} (current: {Fore.GREEN}{value}{Style.RESET_ALL})")
+
+    print("\nEnter the number of the setting you want to change (or press Enter to skip)")
+    print("!IMPORTANT! - settings that are changed will be put in affect when the game is ran next")
     while True:
         choice = input("\nSelection: ")
         if choice == '':
@@ -176,3 +185,7 @@ def display_menu():
             print("Enter a number corresponding to a setting.")
 
     print("\nSettings updated successfully!\n")
+
+    print("Updated settings:")
+    for name, value, _ in settings:
+        print(f"{name}: {value}")
