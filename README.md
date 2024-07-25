@@ -100,7 +100,7 @@
     - `VISION_DISTANCE` - how far the AI's vision will be (default 5)
     - `HEARING_DISTANCE` - how far the AI can hear from (default 3)
     - `NOISE_DURATION` - how long noise will last when the user moves
-  - updated (menu.py)[https://github.com/countervolts/Culminating/commit/0125bbb298c29b201a1725f1e633da722b525c80] to include the previously said consts
+  - updated [menu.py](https://github.com/countervolts/Culminating/commit/0125bbb298c29b201a1725f1e633da722b525c80) to include the previously said consts
  
 ## Update 6 (date 06-14) [changelog](https://github.com/countervolts/Culminating/commit/dec207ad05f3d5d16607e6875395f6ecfda67ed1)
 ### improving emeny ai again
